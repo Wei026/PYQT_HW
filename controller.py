@@ -1,4 +1,4 @@
-import sys
+#import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QImage, QPixmap
 import cv2
