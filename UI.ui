@@ -59,78 +59,29 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="Gray_Button">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>10</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>灰階</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="Histogram_Button">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>60</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>直方圖</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ROI_Button">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>110</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ROI</string>
-    </property>
-   </widget>
    <widget class="QSlider" name="Thresholding_Slider">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>990</x>
+      <x>860</x>
       <y>60</y>
       <width>160</width>
       <height>22</height>
      </rect>
     </property>
+    <property name="maximum">
+     <number>255</number>
+    </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="Thresholding_label">
-    <property name="geometry">
-     <rect>
-      <x>1010</x>
-      <y>10</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>二值化</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="Thresholdvalue_label">
     <property name="geometry">
      <rect>
-      <x>1160</x>
+      <x>1030</x>
       <y>50</y>
       <width>111</width>
       <height>31</height>
@@ -143,6 +94,45 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="Thresholding_Button">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>20</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>二值化</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="Information_lable">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>460</y>
+      <width>431</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Imformation_Button">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>400</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>影像大小資訊</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -150,17 +140,26 @@
      <x>0</x>
      <y>0</y>
      <width>1347</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menufile">
+   <widget class="QMenu" name="setting_menu">
     <property name="title">
      <string>setting</string>
     </property>
     <addaction name="open_action"/>
     <addaction name="save_action"/>
    </widget>
-   <addaction name="menufile"/>
+   <widget class="QMenu" name="imgprocess_menu">
+    <property name="title">
+     <string>影像處理</string>
+    </property>
+    <addaction name="gray_action"/>
+    <addaction name="histogram_action"/>
+    <addaction name="roi_action"/>
+   </widget>
+   <addaction name="setting_menu"/>
+   <addaction name="imgprocess_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_file">
@@ -175,7 +174,22 @@
   </action>
   <action name="save_action">
    <property name="text">
-    <string>save</string>
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="gray_action">
+   <property name="text">
+    <string>Gray</string>
+   </property>
+  </action>
+  <action name="histogram_action">
+   <property name="text">
+    <string>Histogram</string>
+   </property>
+  </action>
+  <action name="roi_action">
+   <property name="text">
+    <string>ROI</string>
    </property>
   </action>
  </widget>

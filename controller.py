@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QFileDialog
 from UI import Ui_MainWindow
+import os
 
 class Mainwindow_controller(QtWidgets.QMainWindow):
     def __init__(self):
@@ -18,11 +19,13 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
 
     def setup_control(self):
         self.ui.open_action.triggered.connect(self.Display_img)
-        self.ui.Gray_Button.clicked.connect(self.Gray_img)
+        self.ui.gray_action.triggered.connect(self.Gray_img)
         self.ui.save_action.triggered.connect(self.Save_img)
-        self.ui.Histogram_Button.clicked.connect(self.Histogram_img)
-        self.ui.ROI_Button.clicked.connect(self.roi_control)
-        self.ui.Thresholding_Slider.valueChanged.connect(self.Threshold_control)
+        self.ui.histogram_action.triggered.connect(self.Histogram_img)
+        self.ui.roi_action.triggered.connect(self.roi_control)
+        self.ui.Thresholding_Slider.valueChanged[int].connect(self.Threshold_control)
+        self.ui.Thresholding_Button.clicked.connect(self.Thresholding)
+        self.ui.Imformation_Button.clicked.connect(self.Show_imformation)
 
     def roi_control(self):
         self.ui.label.mousePressEvent = self.starting_point
@@ -42,7 +45,6 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         else:
             if height or weight !=0:
                 ROI_img = self.copyimg[int(self.Top_Y):int(self.Down_Y), int(self.Left_X):int(self.Right_X)]
-                #ROI_img = self.copyimg[int(self.Top_Y):int(self.Top_Y) + int(height),int(self.Left_X):int(self.Left_X) + int(weight)]
                 cv2.namedWindow("ROI", cv2.WINDOW_NORMAL)
                 cv2.imshow("ROI", ROI_img)
                 cv2.waitKey(0)
@@ -50,15 +52,14 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
             else:
                 self.ui.statusbar.showMessage("未選取影像")
 
-
-
     def Mouse_move(self, point):
         self.flag = True
 
     def Display_img(self):
-        self.ui.ROI_Button.setEnabled(True)
+        self.ui.roi_action.setEnabled(True)
         self.filename, filetype = QFileDialog.getOpenFileName(self, "open image", "./")                                 #選擇開檔的位置
         self.img = cv2.imread(self.filename)                                                                            #讀取開檔的位置
+        self.path = os.path.abspath(self.filename)                                                                      #影像資訊
         self.copyimg = self.img                                                                                         #將讀到的圖片複製一份到copyimg裡面
         height, width, channel = self.img.shape                                                                         #讀取圖片的 shape
         btyesPerline = 3 * width                                                                                        #RGB是三個通道
@@ -97,16 +98,29 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
             plt.title("gray histogram_img")
             plt.show()
 
+    def Thresholding(self):
+        gray = cv2.cvtColor(self.copyimg, cv2.COLOR_BGR2GRAY)
+        ret, thresholding = cv2.threshold(gray, self.ui.Thresholding_Slider.value(), 255, cv2.THRESH_BINARY)
+        height, width = gray.shape
+        bytesPerline = 1 * width
+        self.qImg = QImage(thresholding, width, height, bytesPerline, QImage.Format_Grayscale8).rgbSwapped()            #灰階只有1個通道
+        self.qpixmap = QPixmap.fromImage(self.qImg)
+        self.ui.label.setPixmap(QPixmap.fromImage(self.qImg))
+
+
     def Threshold_control(self):
+        self.ui.Thresholding_Button.clicked.connect(self.Thresholding)
+        self.ui.Thresholdvalue_label.setText(f"{self.ui.Thresholding_Slider.value()}")                                  # Thresholding_Slider.value()取得滑動條之值
 
-        self.ui.Thresholdvalue_label.setText(f"{self.ui.Thresholding_Slider.value()}")
-
+    def Show_imformation(self):
+        height, width, channel = self.copyimg.shape
+        self.ui.Information_lable.setText('影像大小: ' + str(width) + ' X ' + str(height) + '\n' + self.path + '\n' + '圖檔大小: ' + str(round(os.stat(self.path).st_size / 1e+6, 3)) + 'MB')
 
 
 
 if __name__ == '__main__':
-   import sys
-   app = QtWidgets.QApplication(sys.argv)
-   window = Mainwindow_controller()
-   window.show()
-   sys.exit(app.exec_())
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    window = Mainwindow_controller()
+    window.show()
+    sys.exit(app.exec_())
