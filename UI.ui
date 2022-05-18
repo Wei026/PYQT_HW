@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1347</width>
-    <height>576</height>
+    <width>1343</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -123,14 +123,69 @@
    <widget class="QPushButton" name="Imformation_Button">
     <property name="geometry">
      <rect>
-      <x>890</x>
+      <x>870</x>
       <y>400</y>
-      <width>101</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>影像大小資訊</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clockwise_Button">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>180</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>順時針轉</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="counterclockwise_Button">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>210</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>逆時針轉</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="updown_Button">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>150</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>上下翻轉</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="name_label">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>110</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>旋轉</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
@@ -139,8 +194,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1347</width>
-     <height>21</height>
+     <width>1343</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="setting_menu">
@@ -158,8 +213,18 @@
     <addaction name="histogram_action"/>
     <addaction name="roi_action"/>
    </widget>
+   <widget class="QMenu" name="noiseprocess_menu">
+    <property name="title">
+     <string>雜訊處理</string>
+    </property>
+    <addaction name="erosion_action"/>
+    <addaction name="dilation_action"/>
+    <addaction name="opening_action"/>
+    <addaction name="closeing_action"/>
+   </widget>
    <addaction name="setting_menu"/>
    <addaction name="imgprocess_menu"/>
+   <addaction name="noiseprocess_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_file">
@@ -190,6 +255,26 @@
   <action name="roi_action">
    <property name="text">
     <string>ROI</string>
+   </property>
+  </action>
+  <action name="erosion_action">
+   <property name="text">
+    <string>Erosion</string>
+   </property>
+  </action>
+  <action name="dilation_action">
+   <property name="text">
+    <string>Dilation</string>
+   </property>
+  </action>
+  <action name="opening_action">
+   <property name="text">
+    <string>Opening</string>
+   </property>
+  </action>
+  <action name="closeing_action">
+   <property name="text">
+    <string>Closeing</string>
    </property>
   </action>
  </widget>

@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QFileDialog
 from UI import Ui_MainWindow
+from IMG_fuction import funtions
 import os
 
 class Mainwindow_controller(QtWidgets.QMainWindow):
@@ -27,6 +28,50 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         self.ui.Thresholding_Button.clicked.connect(self.Thresholding)
         self.ui.Imformation_Button.clicked.connect(self.Show_imformation)
 
+        self.ui.updown_Button.clicked.connect(self.updown_control)
+        self.ui.clockwise_Button.clicked.connect(self.clockwise_control)
+        self.ui.counterclockwise_Button.clicked.connect(self.counterclockwise_control)
+
+        self.ui.erosion_action.triggered.connect(self.erosion_control)
+        self.ui.dilation_action.triggered.connect(self.dilation_control)
+        self.ui.opening_action.triggered.connect(self.opening_control)
+        self.ui.closeing_action.triggered.connect(self.closeing_control)
+
+    def erosion_control(self):
+        # erosion_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        img = cv2.erode(self.img, kernel)
+        funtions.label_img(self, img)
+
+
+    def dilation_control(self):
+        # dilation_img = cv2.cvtColor(self.img, cv2.COLOR_RGB2GRAY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        img = cv2.dilate(self.img, kernel)
+        funtions.label_img(self, img)
+
+    def opening_control(self):
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        opening_img = cv2.morphologyEx(self.img, cv2.MORPH_OPEN, kernel, iterations=2)
+        funtions.label_img(self, opening_img)
+
+    def closeing_control(self):
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        closeing_img = cv2.morphologyEx(self.img, cv2.MORPH_CLOSE, kernel, iterations=2)
+        funtions.label_img(self, closeing_img)
+
+    def updown_control(self):
+        updown_img = cv2.rotate(self.img, cv2.ROTATE_180)
+        funtions.label_img(self, updown_img)
+
+    def clockwise_control(self):
+        clockwise_img = cv2.rotate(self.img, cv2.ROTATE_90_CLOCKWISE)
+        funtions.label_img(self, clockwise_img)
+
+    def counterclockwise_control(self):
+        counterclockwise_img = cv2.rotate(self.img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        funtions.label_img(self, counterclockwise_img)
+
     def roi_control(self):
         self.ui.label.mousePressEvent = self.starting_point
         self.ui.label.mouseReleaseEvent = self.end_point
@@ -43,7 +88,7 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         if self.filename == '':
             return 0
         else:
-            if height or weight !=0:
+            if height or weight != 0:
                 ROI_img = self.copyimg[int(self.Top_Y):int(self.Down_Y), int(self.Left_X):int(self.Right_X)]
                 cv2.namedWindow("ROI", cv2.WINDOW_NORMAL)
                 cv2.imshow("ROI", ROI_img)
@@ -55,24 +100,18 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
     def Mouse_move(self, point):
         self.flag = True
 
+
     def Display_img(self):
         self.ui.roi_action.setEnabled(True)
         self.filename, filetype = QFileDialog.getOpenFileName(self, "open image", "./")                                 #選擇開檔的位置
         self.img = cv2.imread(self.filename)                                                                            #讀取開檔的位置
         self.path = os.path.abspath(self.filename)                                                                      #影像資訊
-        self.copyimg = self.img                                                                                         #將讀到的圖片複製一份到copyimg裡面
-        height, width, channel = self.img.shape                                                                         #讀取圖片的 shape
-        btyesPerline = 3 * width                                                                                        #RGB是三個通道
-        self.qimg = QImage(self.img, width, height, btyesPerline, QImage.Format_RGB888).rgbSwapped()                    #轉成 OpenCV (numpy) 的格式圖片轉換成 QImage 的格式
-        self.ui.label.setPixmap(QPixmap.fromImage(self.qimg))                                                           #將圖片在 label 中顯示
+        funtions.label_img(self, self.img)
+
 
     def Gray_img(self):
         self.gray_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)                                                      #使用cvtColor轉換格式，COLOR_BGR2GRAY是因為self.img是BGR
-        self.copyimg = self.gray_img                                                                                    ##將讀到的圖片複製一份到copyimg裡面
-        height, width = self.gray_img.shape
-        gray_bytesPerline = 1 * width                                                                                   #灰階只有1個通道
-        self.gray_qimg = QImage(self.gray_img, width, height, gray_bytesPerline, QImage.Format_Indexed8)
-        self.ui.label.setPixmap(QPixmap.fromImage(self.gray_qimg))
+        funtions.label_img(self, self.gray_img)
 
     def Save_img(self):
         filename, _ = QFileDialog.getSaveFileName(self, 'Save Image', 'Image', '*.png')
@@ -99,13 +138,9 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
             plt.show()
 
     def Thresholding(self):
-        gray = cv2.cvtColor(self.copyimg, cv2.COLOR_BGR2GRAY)
-        ret, thresholding = cv2.threshold(gray, self.ui.Thresholding_Slider.value(), 255, cv2.THRESH_BINARY)
-        height, width = gray.shape
-        bytesPerline = 1 * width
-        self.qImg = QImage(thresholding, width, height, bytesPerline, QImage.Format_Grayscale8).rgbSwapped()            #灰階只有1個通道
-        self.qpixmap = QPixmap.fromImage(self.qImg)
-        self.ui.label.setPixmap(QPixmap.fromImage(self.qImg))
+        gray = cv2.imread(self.filename, cv2.IMREAD_GRAYSCALE)
+        ret, thresholding = cv2.threshold(gray, self.ui.Thresholding_Slider.value(), 255, cv2.THRESH_BINARY)            #二值化轉換
+        funtions.label_img(self, thresholding)
 
 
     def Threshold_control(self):
@@ -113,8 +148,13 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         self.ui.Thresholdvalue_label.setText(f"{self.ui.Thresholding_Slider.value()}")                                  # Thresholding_Slider.value()取得滑動條之值
 
     def Show_imformation(self):
-        height, width, channel = self.copyimg.shape
-        self.ui.Information_lable.setText('影像大小: ' + str(width) + ' X ' + str(height) + '\n' + self.path + '\n' + '圖檔大小: ' + str(round(os.stat(self.path).st_size / 1e+6, 3)) + 'MB')
+        if len(self.copyimg.shape) == 3:
+            height, width, channel = self.copyimg.shape
+            self.ui.Information_lable.setText('影像大小: ' + str(width) + ' X ' + str(height) + '\n' + self.path + '\n' + '圖檔大小: ' + str(round(os.stat(self.path).st_size / 1e+6, 3)) + 'MB')
+        else:
+            height, width = self.copyimg.shape
+            self.ui.Information_lable.setText('影像大小: ' + str(width) + ' X ' + str(height) + '\n' + self.path + '\n' + '圖檔大小: ' + str(round(os.stat(self.path).st_size / 1e+6, 3)) + 'MB')
+
 
 
 
