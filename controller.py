@@ -37,6 +37,159 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         self.ui.opening_action.triggered.connect(self.opening_control)
         self.ui.closeing_action.triggered.connect(self.closeing_control)
 
+        self.ui.face_detection_action.triggered.connect(self.face_detection_control)
+        self.ui.real_time_detection_action.triggered.connect(self.real_time_detection_control)
+        self.ui.face_mosaic_action.triggered.connect(self.face_mosaic_control)
+        self.ui.real_time_face_mosaic_action.triggered.connect(self.real_time_face_mosaic_control)
+        self.ui.facial_features_detection_action.triggered.connect(self.facial_features_control)
+        self.ui.real_time_facial_features_detection_action.triggered.connect(self.real_time_facial_features_control)
+
+    def face_detection_control(self):
+        img = self.img_resize
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)                                                                    # 將圖片轉成灰階
+
+        face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")                                     # 載入人臉模型
+        faces = face_cascade.detectMultiScale(gray)                                                                     # 偵測人臉
+
+        for (x, y, w, h) in faces:
+             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)                                                 # 利用 for 迴圈，抓取每個人臉屬性，繪製方框
+
+        cv2.imshow('oxxostudio', img)
+        cv2.waitKey(0)                                                                                                  # 按下任意鍵停止
+        cv2.destroyAllWindows()
+
+
+    def real_time_detection_control(self):
+        cap = cv2.VideoCapture(0)
+        face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+        if not cap.isOpened():
+            print("Cannot open camera")
+            exit()
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Cannot receive frame")
+                break
+            frame = cv2.resize(frame, (540, 320))  # 縮小尺寸，避免尺寸過大導致效能不好
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 將鏡頭影像轉換成灰階
+            faces = face_cascade.detectMultiScale(gray)  # 偵測人臉
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)  # 標記人臉
+            cv2.imshow('oxxostudio', frame)
+            if cv2.waitKey(1) == ord('q'):
+                break
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def face_mosaic_control(self):
+        img = self.img_resize
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)                                                                    # 影像轉換成灰階
+        face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")                                     # 載入人臉偵測模型
+        faces = face_cascade.detectMultiScale(gray, 1.2, 3)                                                             # 開始辨識影像中的人臉
+
+        for (x, y, w, h) in faces:
+            mosaic = img[y:y + h, x:x + w]                                                                              # 馬賽克區域
+            level = 15                                                                                                  # 馬賽克程度
+            mh = int(h / level)                                                                                         # 根據馬賽克程度縮小的高度
+            mw = int(w / level)                                                                                         # 根據馬賽克程度縮小的寬度
+            mosaic = cv2.resize(mosaic, (mw, mh), interpolation=cv2.INTER_LINEAR)                                       # 先縮小
+            mosaic = cv2.resize(mosaic, (w, h), interpolation=cv2.INTER_NEAREST)                                        # 然後放大
+            img[y:y + h, x:x + w] = mosaic                                                                              # 將指定區域換成馬賽克區域
+
+        cv2.imshow('oxxostudio', img)
+        cv2.waitKey(0)                                                                                                  # 按下任意鍵停止
+        cv2.destroyAllWindows()
+
+    def real_time_face_mosaic_control(self):
+        cap = cv2.VideoCapture(0)
+        face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        if not cap.isOpened():
+            print("Cannot open camera")
+            exit()
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Cannot receive frame")
+                break
+            frame = cv2.resize(frame, (480, 300))  # 縮小尺寸，避免尺寸過大導致效能不好
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 影像轉轉灰階
+            faces = face_cascade.detectMultiScale(gray)  # 偵測人臉
+            for (x, y, w, h) in faces:
+                mosaic = frame[y:y + h, x:x + w]
+                level = 15
+                mh = int(h / level)
+                mw = int(w / level)
+                mosaic = cv2.resize(mosaic, (mw, mh), interpolation=cv2.INTER_LINEAR)
+                mosaic = cv2.resize(mosaic, (w, h), interpolation=cv2.INTER_NEAREST)
+                frame[y:y + h, x:x + w] = mosaic
+            cv2.imshow('oxxostudio', frame)
+            if cv2.waitKey(1) == ord('q'):
+                break  # 按下 q 鍵停止
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def facial_features_control(self):
+        img = self.img_resize
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 圖片轉灰階
+        # gray = cv2.medianBlur(gray, 5)                # 如果一直偵測到雜訊，可使用模糊的方式去除雜訊
+
+        eye_cascade = cv2.CascadeClassifier("haarcascade_eye.xml")  # 使用眼睛模型
+        eyes = eye_cascade.detectMultiScale(gray)  # 偵測眼睛
+        for (x, y, w, h) in eyes:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)  # 標記綠色方框
+
+        mouth_cascade = cv2.CascadeClassifier("haarcascade_mcs_mouth.xml")  # 使用嘴巴模型
+        mouths = mouth_cascade.detectMultiScale(gray)  # 偵測嘴巴
+        for (x, y, w, h) in mouths:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)  # 標記紅色方框
+
+        nose_cascade = cv2.CascadeClassifier("haarcascade_mcs_nose.xml")  # 使用鼻子模型
+        noses = nose_cascade.detectMultiScale(gray)  # 偵測鼻子
+        for (x, y, w, h) in noses:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)  # 標記藍色方框
+
+        cv2.imshow('oxxostudio', img)
+        cv2.waitKey(0)  # 按下任意鍵停止
+        cv2.destroyAllWindows()
+
+    def real_time_facial_features_control(self):
+        cap = cv2.VideoCapture(0)
+        eye_cascade = cv2.CascadeClassifier("haarcascade_eye.xml")  # 使用眼睛模型
+        mouth_cascade = cv2.CascadeClassifier("haarcascade_mcs_mouth.xml")  # 使用嘴巴模型
+        nose_cascade = cv2.CascadeClassifier("haarcascade_mcs_nose.xml")  # 使用鼻子模型
+        # faces = face_cascade.detectMultiScale(gray, 2, 0)
+        if not cap.isOpened():
+            print("Cannot open camera")
+            exit()
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Cannot receive frame")
+                break
+            img = cv2.resize(frame, (540, 320))
+            gray = cv2.medianBlur(img, 1)
+            gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
+            gray = cv2.medianBlur(gray, 5)
+
+            eyes = eye_cascade.detectMultiScale(gray)                                                                   # 偵測眼睛
+            for (x, y, w, h) in eyes:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            mouths = mouth_cascade.detectMultiScale(gray)                                                               # 偵測嘴巴
+            for (x, y, w, h) in mouths:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+            noses = nose_cascade.detectMultiScale(gray)                                                                 # 偵測鼻子
+            for (x, y, w, h) in noses:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+            cv2.imshow('oxxostudio', img)
+            if cv2.waitKey(1) == ord('q'):
+                break  # 按下 q 鍵停止
+        cap.release()
+        cv2.destroyAllWindows()
+
     def erosion_control(self):
         # erosion_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -106,7 +259,9 @@ class Mainwindow_controller(QtWidgets.QMainWindow):
         self.filename, filetype = QFileDialog.getOpenFileName(self, "open image", "./")                                 #選擇開檔的位置
         self.img = cv2.imread(self.filename)                                                                            #讀取開檔的位置
         self.path = os.path.abspath(self.filename)                                                                      #影像資訊
-        funtions.label_img(self, self.img)
+        self.img_resize = cv2.resize(self.img, (800, 600), interpolation=cv2.INTER_AREA)
+        funtions.label_img(self, self.img_resize)
+
 
 
     def Gray_img(self):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1343</width>
-    <height>575</height>
+    <width>1351</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -194,8 +194,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1343</width>
-     <height>25</height>
+     <width>1351</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="setting_menu">
@@ -222,9 +222,21 @@
     <addaction name="opening_action"/>
     <addaction name="closeing_action"/>
    </widget>
+   <widget class="QMenu" name="face_recognition_menu">
+    <property name="title">
+     <string>影像辨識</string>
+    </property>
+    <addaction name="face_detection_action"/>
+    <addaction name="real_time_detection_action"/>
+    <addaction name="face_mosaic_action"/>
+    <addaction name="real_time_face_mosaic_action"/>
+    <addaction name="facial_features_detection_action"/>
+    <addaction name="real_time_facial_features_detection_action"/>
+   </widget>
    <addaction name="setting_menu"/>
    <addaction name="imgprocess_menu"/>
    <addaction name="noiseprocess_menu"/>
+   <addaction name="face_recognition_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_file">
@@ -275,6 +287,36 @@
   <action name="closeing_action">
    <property name="text">
     <string>Closeing</string>
+   </property>
+  </action>
+  <action name="face_detection_action">
+   <property name="text">
+    <string>face_detection</string>
+   </property>
+  </action>
+  <action name="real_time_detection_action">
+   <property name="text">
+    <string>real-time_detection</string>
+   </property>
+  </action>
+  <action name="face_mosaic_action">
+   <property name="text">
+    <string>face_mosaic</string>
+   </property>
+  </action>
+  <action name="real_time_face_mosaic_action">
+   <property name="text">
+    <string>real-time_face_mosaic</string>
+   </property>
+  </action>
+  <action name="facial_features_detection_action">
+   <property name="text">
+    <string>facial_features_detection</string>
+   </property>
+  </action>
+  <action name="real_time_facial_features_detection_action">
+   <property name="text">
+    <string>real_time_fish_eyes</string>
    </property>
   </action>
  </widget>

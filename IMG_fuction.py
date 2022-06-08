@@ -15,7 +15,7 @@ class funtions():
     def label_img(self, img):
         if len(img.shape) == 3:
             self.copyimg = img                                                                                          # 將讀到的圖片複製一份到copyimg裡面
-            height, width, channel = img.shape                                                                          # 讀取圖片的 shape
+            height, width, channel = img.shape                                                                   # 讀取圖片的 shape
             btyesPerline = 3 * width                                                                                    # RGB是三個通道
             self.qimg = QImage(img, width, height, btyesPerline,QImage.Format_RGB888).rgbSwapped()                      # 轉成 OpenCV (numpy) 的格式圖片轉換成 QImage 的格式
             self.ui.label.setPixmap(QPixmap.fromImage(self.qimg))                                                       # 將圖片在 label 中顯示
