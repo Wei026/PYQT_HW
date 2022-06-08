@@ -2,8 +2,7 @@
 影像處理概論
 
 ## 開發環境
-1.使用開發軟體工具:pycharm
-
+1.使用開發軟體工具:pycharm \
 2.使用語言:Python3.9
 
 3.使用套件:OpenCV 、 matplotlib 
